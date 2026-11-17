@@ -37,7 +37,7 @@
             </div>
 
             <!-- Tombol CTA -->
-            <a href="#"
+            <a href="{{ route('login') }}"
                 class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md transition">
                 Masuk / Daftar
             </a>
