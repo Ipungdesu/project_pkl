@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Operator\AdminController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,15 @@ Route::get('/tentang', function () {
     return view('about');
 })->name('tentang');
 
+// Rute Fitur Otentikasi & Akun Demo
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/login', 'login')->name('login');
+    Route::get('/register', 'register')->name('register');
+    Route::get('/verifikasi', 'verify')->name('verifikasi');
+    Route::get('/pendaftaran-berhasil', 'done')->name('pendaftaran.berhasil');
+    Route::get('/lupa-password', 'forgotPassword')->name('lupa-password');
+    Route::get('/reset-password', 'resetPassword')->name('reset-password');
+});
 // Rute untuk Halaman Peluang Karir
 Route::get('/peluang-karir', function () {
     return view('karir');
