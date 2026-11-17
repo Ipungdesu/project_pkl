@@ -7,22 +7,30 @@ use Illuminate\Support\Facades\Route;
 // File view: resources/views/welcome.blade.php
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('beranda');
+
+// Rute untuk Halaman Tentang Kami
+// File view: resources/views/about.blade.php
+Route::get('/tentang', function () {
+    // Karena nama filenya about.blade.php, kita gunakan view('about')
+    return view('about');
+})->name('tentang');
+
 
 Route::middleware('auth')->group(function (): void {
-    Route::get('/operator/dashboard', fn () => view('dashboards.operator'))
+    Route::get('/operator/dashboard', fn() => view('dashboards.operator'))
         ->middleware('role:operator')
         ->name('operator.dashboard');
 
-    Route::get('/admin/dashboard', fn () => view('dashboards.admin'))
+    Route::get('/admin/dashboard', fn() => view('dashboards.admin'))
         ->middleware('role:admin,operator')
         ->name('admin.dashboard');
 
-    Route::get('/magang/dashboard', fn () => view('dashboards.magang'))
+    Route::get('/magang/dashboard', fn() => view('dashboards.magang'))
         ->middleware('role:magang')
         ->name('magang.dashboard');
 
-    Route::get('/karyawan/dashboard', fn () => view('dashboards.karyawan'))
+    Route::get('/karyawan/dashboard', fn() => view('dashboards.karyawan'))
         ->middleware('role:karyawan')
         ->name('karyawan.dashboard');
 
@@ -33,12 +41,4 @@ Route::middleware('auth')->group(function (): void {
     });
 });
 
-require __DIR__.'/auth.php';
-})->name('beranda');
-
-// Rute untuk Halaman Tentang Kami
-// File view: resources/views/about.blade.php
-Route::get('/tentang', function () {
-    // Karena nama filenya about.blade.php, kita gunakan view('about')
-    return view('about');
-})->name('tentang');
+require __DIR__ . '/auth.php';
