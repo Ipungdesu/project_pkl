@@ -23,6 +23,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/lupa-password', 'forgotPassword')->name('lupa-password');
     Route::get('/reset-password', 'resetPassword')->name('reset-password');
 });
+
 // Rute untuk Halaman Peluang Karir
 Route::get('/peluang-karir', function () {
     return view('karir');
@@ -32,6 +33,7 @@ Route::get('/peluang-karir', function () {
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
+
 
 Route::middleware('auth')->group(function (): void {
     Route::get('/operator/dashboard', fn() => view('dashboards.operator'))
@@ -57,4 +59,4 @@ Route::middleware('auth')->group(function (): void {
     });
 });
 
-require __DIR__ . '/auth.php';
+// require __DIR__ . '/auth.php';
