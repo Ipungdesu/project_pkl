@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'Peluang Karir & Program Magang MBKM | PT Equityworld Futures')
 
