@@ -3,12 +3,12 @@
 use App\Http\Controllers\Applicant\ApplicationController;
 use App\Http\Controllers\Applicant\JobOpeningController;
 use App\Http\Controllers\Applicant\ProfileController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Operator\AdminController;
 use App\Models\JobOpening;
 use Illuminate\Support\Facades\Route;
 
 // Rute untuk Halaman Utama (Beranda / Landing Page)
-// File view: resources/views/welcome.blade.php
 Route::get('/', function () {
     return view('welcome', [
         'jobOpenings' => JobOpening::open()
@@ -19,11 +19,30 @@ Route::get('/', function () {
 })->name('beranda');
 
 // Rute untuk Halaman Tentang Kami
-// File view: resources/views/about.blade.php
 Route::get('/tentang', function () {
-    // Karena nama filenya about.blade.php, kita gunakan view('about')
     return view('about');
 })->name('tentang');
+
+// Rute Fitur Otentikasi & Akun Demo
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/login', 'login')->name('login');
+    Route::get('/register', 'register')->name('register');
+    Route::get('/verifikasi', 'verify')->name('verifikasi');
+    Route::get('/pendaftaran-berhasil', 'done')->name('pendaftaran.berhasil');
+    Route::get('/lupa-password', 'forgotPassword')->name('lupa-password');
+    Route::get('/reset-password', 'resetPassword')->name('reset-password');
+});
+
+// Rute untuk Halaman Peluang Karir
+Route::get('/peluang-karir', function () {
+    return view('karir');
+})->name('karir');
+
+// Rute Landingpage Ke Halaman Login
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
 
 Route::middleware('auth')->group(function (): void {
     Route::middleware('role:magang,karyawan')->prefix('pelamar')->name('applicant.')->group(function (): void {
@@ -66,3 +85,4 @@ Route::middleware('auth')->group(function (): void {
 });
 
 require __DIR__.'/auth.php';
+// require __DIR__ . '/auth.php';
