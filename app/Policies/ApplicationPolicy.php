@@ -18,4 +18,10 @@ class ApplicationPolicy
             || $user->isAdmin()
             || (int) $application->applicant_id === (int) $user->getKey();
     }
+
+    public function update(User $user, Application $application): bool
+    {
+        return $application->status === 'draft'
+            && (int) $application->applicant_id === (int) $user->getKey();
+    }
 }

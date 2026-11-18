@@ -32,11 +32,11 @@
             <div class="hidden md:flex space-x-6 lg:space-x-10 text-sm font-semibold">
                 <a href="{{ route('beranda') }}" class="text-gray-900 hover:text-orange-600 transition">Beranda</a>
                 <a href="{{ route('tentang') }}" class="text-gray-800 hover:text-orange-600 transition">Tentang Kami</a>
-                <a href="#" class="text-gray-800 hover:text-orange-600 transition">Peluang Karir</a>
+                <a href="#lowongan" class="text-gray-800 hover:text-orange-600 transition">Peluang Karir</a>
             </div>
 
             <!-- Tombol CTA Nav -->
-            <a href="#"
+            <a href="{{ auth()->check() ? route('applicant.jobs.index') : route('register') }}"
                 class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md transition">
                 Masuk / Daftar
             </a>
@@ -82,12 +82,12 @@
 
                 <!-- Tombol Hero -->
                 <div class="flex flex-wrap gap-4 pt-2">
-                    <a href="#"
+                    <a href="#lowongan"
                         class="bg-orange-500 text-white px-8 py-3.5 rounded-lg font-bold hover:bg-orange-600 transition flex items-center space-x-2 shadow-md hover:shadow-lg">
                         <span>Lihat Peluang Karir</span>
                         <span class="ml-2 font-black">→</span>
                     </a>
-                    <a href="#"
+                    <a href="{{ route('tentang') }}"
                         class="bg-white/80 backdrop-blur-sm border border-orange-200 text-gray-800 px-8 py-3.5 rounded-lg font-bold hover:bg-orange-50 transition shadow-sm">
                         🏛️ Tentang EWF & Regulasi
                     </a>
@@ -262,6 +262,42 @@
                     </a>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= LOWONGAN SECTION ================= -->
+    <section id="lowongan" class="relative w-full py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center max-w-2xl mx-auto">
+                <div class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-4 py-1.5 rounded-md uppercase tracking-widest mb-6">
+                    Peluang Karir
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Lowongan yang Sedang Dibuka</h2>
+                <p class="text-gray-500 mt-3 text-sm">Temukan kesempatan untuk berkembang bersama PT Equityworld Futures.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+                @forelse ($jobOpenings as $jobOpening)
+                    <article class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                        <span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
+                            {{ $jobOpening->type === 'magang' ? 'Magang' : 'Karyawan' }}
+                        </span>
+                        <h3 class="font-bold text-gray-900 text-lg mt-4">{{ $jobOpening->title }}</h3>
+                        <p class="text-gray-500 text-sm mt-2">{{ \Illuminate\Support\Str::limit($jobOpening->description, 160) }}</p>
+                        @if ($jobOpening->deadline)
+                            <p class="text-gray-400 text-xs mt-4">Batas waktu: {{ $jobOpening->deadline->format('d-m-Y') }}</p>
+                        @endif
+                        <a
+                            href="{{ auth()->check() ? route('applicant.jobs.index') : route('register') }}"
+                            class="inline-flex mt-6 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition"
+                        >
+                            Lamar
+                        </a>
+                    </article>
+                @empty
+                    <p class="md:col-span-2 lg:col-span-3 text-center text-gray-500">Belum ada lowongan yang tersedia.</p>
+                @endforelse
             </div>
         </div>
     </section>

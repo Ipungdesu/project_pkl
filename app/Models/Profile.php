@@ -55,4 +55,31 @@ class Profile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function maskedNik(): ?string
+    {
+        return $this->maskSensitiveValue($this->nik_encrypted);
+    }
+
+    public function maskedPhone(): ?string
+    {
+        return $this->maskSensitiveValue($this->phone_encrypted);
+    }
+
+    private function maskSensitiveValue(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $length = mb_strlen($value);
+
+        if ($length <= 8) {
+            return str_repeat('*', $length);
+        }
+
+        return mb_substr($value, 0, 4)
+            .str_repeat('*', $length - 8)
+            .mb_substr($value, -4);
+    }
 }

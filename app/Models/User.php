@@ -105,4 +105,50 @@ class User extends Authenticatable
     {
         return $this->role === 'karyawan';
     }
+
+    public function hasCompleteApplicantProfile(): bool
+    {
+        if (! $this->isMagang() && ! $this->isKaryawan()) {
+            return false;
+        }
+
+        $this->loadMissing(['profile', 'internDetail']);
+
+        if ($this->profile === null) {
+            return false;
+        }
+
+        foreach ([
+            $this->profile->full_name,
+            $this->profile->nik_encrypted,
+            $this->profile->phone_encrypted,
+            $this->profile->birth_place,
+            $this->profile->birth_date,
+            $this->profile->address,
+            $this->profile->last_education,
+        ] as $value) {
+            if (! filled($value)) {
+                return false;
+            }
+        }
+
+        if ($this->isMagang()) {
+            if ($this->internDetail === null) {
+                return false;
+            }
+
+            foreach ([
+                $this->internDetail->university,
+                $this->internDetail->major,
+                $this->internDetail->student_id_number,
+                $this->internDetail->semester,
+            ] as $value) {
+                if (! filled($value)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
