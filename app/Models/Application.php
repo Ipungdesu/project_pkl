@@ -53,7 +53,9 @@ class Application extends Model
 
     public function statusHistory(): HasMany
     {
-        return $this->hasMany(ApplicationStatusHistory::class);
+        return $this->hasMany(ApplicationStatusHistory::class)
+            ->oldest('created_at')
+            ->oldest('id');
     }
 
     public function internPlacement(): HasOne

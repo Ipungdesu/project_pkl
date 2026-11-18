@@ -1,5 +1,46 @@
 @extends('layouts.public')
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PT Equityworld Futures | Landing Page</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-800 antialiased overflow-x-hidden">
+
+    <!-- ================= NAVBAR (FLOATING) ================= -->
+    <div class="fixed top-0 left-0 w-full z-50 pt-4 px-4 sm:px-6 lg:px-8">
+        <nav
+            class="max-w-7xl mx-auto bg-orange-200/90 backdrop-blur-md rounded-full px-4 py-2 sm:px-6 sm:py-3 flex justify-between items-center shadow-sm border border-orange-300">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <img src="{{ asset('assets/logo_ewf-removebg-preview-1.png') }}" alt="Logo PT Equityworld Futures"
+                    class="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+                <span class="font-bold text-gray-900 text-sm sm:text-base">PT Equityworld Futures</span>
+            </div>
+
+            <!-- Menu Navigasi (Desktop) -->
+            <div class="hidden md:flex space-x-6 lg:space-x-10 text-sm font-semibold">
+                <a href="{{ route('beranda') }}" class="text-gray-900 hover:text-orange-600 transition">Beranda</a>
+                <a href="{{ route('tentang') }}" class="text-gray-800 hover:text-orange-600 transition">Tentang Kami</a>
+                <a href="#lowongan" class="text-gray-800 hover:text-orange-600 transition">Peluang Karir</a>
+            </div>
+
+            <!-- Tombol CTA Nav -->
+            <a href="{{ auth()->check() ? route('applicant.jobs.index') : route('register') }}"
+                class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md transition">
+                Masuk / Daftar
+            </a>
+        </nav>
+    </div>
 @section('title', 'PT Equityworld Futures | Pialang Berjangka Resmi Indonesia')
 
 @section('content')
@@ -40,6 +81,18 @@
                         PT Equityworld Futures mengintegrasikan ekosistem perdagangan komoditi teregulasi Bappebti dengan akselerasi karir profesional. Kami membuka jalur nyata bagi talenta berprestasi untuk menguasai industri keuangan derivatif nasional.
                     </p>
 
+                <!-- Tombol Hero -->
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <a href="#lowongan"
+                        class="bg-orange-500 text-white px-8 py-3.5 rounded-lg font-bold hover:bg-orange-600 transition flex items-center space-x-2 shadow-md hover:shadow-lg">
+                        <span>Lihat Peluang Karir</span>
+                        <span class="ml-2 font-black">→</span>
+                    </a>
+                    <a href="{{ route('tentang') }}"
+                        class="bg-white/80 backdrop-blur-sm border border-orange-200 text-gray-800 px-8 py-3.5 rounded-lg font-bold hover:bg-orange-50 transition shadow-sm">
+                        🏛️ Tentang EWF & Regulasi
+                    </a>
+                </div>
                     <!-- Tombol Aksi Hero -->
                     <div class="flex flex-wrap items-center gap-4 pt-2">
                         <a href="{{ route('karir') }}"
@@ -285,6 +338,72 @@
         </div>
     </section>
 
+    <!-- ================= LOWONGAN SECTION ================= -->
+    <section id="lowongan" class="relative w-full py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center max-w-2xl mx-auto">
+                <div class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-4 py-1.5 rounded-md uppercase tracking-widest mb-6">
+                    Peluang Karir
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Lowongan yang Sedang Dibuka</h2>
+                <p class="text-gray-500 mt-3 text-sm">Temukan kesempatan untuk berkembang bersama PT Equityworld Futures.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+                @forelse ($jobOpenings as $jobOpening)
+                    <article class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                        <span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
+                            {{ $jobOpening->type === 'magang' ? 'Magang' : 'Karyawan' }}
+                        </span>
+                        <h3 class="font-bold text-gray-900 text-lg mt-4">{{ $jobOpening->title }}</h3>
+                        <p class="text-gray-500 text-sm mt-2">{{ \Illuminate\Support\Str::limit($jobOpening->description, 160) }}</p>
+                        @if ($jobOpening->deadline)
+                            <p class="text-gray-400 text-xs mt-4">Batas waktu: {{ $jobOpening->deadline->format('d-m-Y') }}</p>
+                        @endif
+                        <a
+                            href="{{ auth()->check() ? route('applicant.jobs.index') : route('register') }}"
+                            class="inline-flex mt-6 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition"
+                        >
+                            Lamar
+                        </a>
+                    </article>
+                @empty
+                    <p class="md:col-span-2 lg:col-span-3 text-center text-gray-500">Belum ada lowongan yang tersedia.</p>
+                @endforelse
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-gray-100 pt-16 pb-8 border-t border-gray-200 mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <!-- Brand Info -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-3">
+                    <img src="{{ asset('assets/logo_ewf-removebg-preview-1.png') }}" alt="Logo PT Equityworld Futures" class="w-8 h-8 object-contain" />
+                    <span class="font-bold text-gray-900 text-sm">PT Equityworld Futures</span>
+                </div>
+                <p class="text-xs text-gray-500 leading-relaxed pr-4">Perusahaan pialang berjangka resmi terkemuka di
+                    Indonesia. Kami menyediakan infrastruktur perdagangan komoditi dan derivatif yang transparan, aman,
+                    dan berizin penuh, serta didukung kehandalan teknologi sistem informasi terkini.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-white border border-gray-200 text-[9px] px-2 py-1 rounded font-bold text-gray-600">ANGGOTA BBJ</span>
+                    <span class="bg-white border border-gray-200 text-[9px] px-2 py-1 rounded font-bold text-gray-600">KLIRING KBI</span>
+                    <span class="bg-white border border-gray-200 text-[9px] px-2 py-1 rounded font-bold text-orange-500">BAPPEBTI</span>
+                </div>
+            </div>
+
+            <!-- Links 1 -->
+            <div>
+                <h4 class="font-bold text-gray-900 mb-6 text-sm">Tentang EWF</h4>
+                <ul class="space-y-3 text-xs font-medium text-gray-500">
+                    <li><a href="#" class="hover:text-orange-500 transition">Profil & Legalitas</a></li>
+                    <li><a href="#" class="hover:text-orange-500 transition">Produk Komoditi & Valas</a></li>
+                    <li><a href="#" class="hover:text-orange-500 transition">Rekening Terpisah (Segregated)</a></li>
+                    <li><a href="#" class="hover:text-orange-500 transition">Riset Pasar & Berita</a></li>
+                    <li><a href="#" class="hover:text-orange-500 transition">Tata Kelola Perusahaan</a></li>
+                </ul>
+            </div>
     <!-- ================= CTA BERGABUNG SECTION ================= -->
     <section class="relative w-full py-20 bg-orange-500 overflow-hidden">
         <!-- Background Wave Pattern -->
