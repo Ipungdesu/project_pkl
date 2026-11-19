@@ -114,11 +114,12 @@
         var fl = $('#fLogin', container);
         if (fl) {
             fl.onsubmit = function (e) {
-                e.preventDefault(); 
-                var f = e.target, ok = mailErr(f.e);
-                if (!f.p.value) { err(f.p, 'Password wajib diisi.'); ok = false; } 
+                var f = e.target, email = f.email, password = f.password, ok = mailErr(email);
+                if (!password.value) { err(password, 'Password wajib diisi.'); ok = false; }
                 if (!capOK(f)) ok = false;
-                if (ok) toast('Tampilan demo: hubungkan form ini ke backend login.');
+                if (!ok) {
+                    e.preventDefault();
+                }
             };
         }
 
@@ -315,7 +316,7 @@
         if (link && link.href) {
             try {
                 var targetUrl = new URL(link.href, location.origin);
-                var authKeywords = ['/login', '/register', '/verifikasi', '/lupa-password', '/reset-password', '/pendaftaran-berhasil'];
+                var authKeywords = ['/login', '/register', '/verifikasi', '/lupa-password', '/forgot-password', '/verify-password-otp', '/reset-password', '/pendaftaran-berhasil'];
                 var isAuthRoute = authKeywords.some(function (k) { return targetUrl.pathname.endsWith(k); });
 
                 if (targetUrl.origin === location.origin && isAuthRoute) {

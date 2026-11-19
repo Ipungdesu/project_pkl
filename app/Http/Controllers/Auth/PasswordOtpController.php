@@ -18,7 +18,7 @@ class PasswordOtpController extends Controller
 {
     public function create(): View
     {
-        return view('auth.forgot-password');
+        return view('auth.forgot');
     }
 
     public function send(Request $request, AuthActivityLogger $activityLogger): RedirectResponse
@@ -62,7 +62,7 @@ class PasswordOtpController extends Controller
             return redirect()->route('password.request');
         }
 
-        return view('auth.verify-password-otp', [
+        return view('auth.verify', [
             'email' => $request->session()->get('otp_email'),
         ]);
     }
@@ -140,7 +140,7 @@ class PasswordOtpController extends Controller
                 ->withErrors(['email' => 'Verify a current code before resetting your password.']);
         }
 
-        return view('auth.reset-password');
+        return view('auth.reset');
     }
 
     public function reset(Request $request, AuthActivityLogger $activityLogger): RedirectResponse

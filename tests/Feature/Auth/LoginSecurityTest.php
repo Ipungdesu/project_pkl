@@ -8,6 +8,16 @@ use Tests\Feature\Models\PostgresFeatureTestCase;
 
 class LoginSecurityTest extends PostgresFeatureTestCase
 {
+    public function test_login_page_renders_the_backend_login_form(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertViewIs('auth.login')
+            ->assertSee('name="email"', false)
+            ->assertSee('name="password"', false)
+            ->assertSee('action="'.route('login').'"', false);
+    }
+
     public function test_five_consecutive_failures_lock_the_account_for_fifteen_minutes_and_are_logged(): void
     {
         $this->travelTo('2026-11-16 12:00:00');
