@@ -74,6 +74,15 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:admin,operator')
         ->name('admin.dashboard');
 
+    Route::prefix('admin')->name('admin.')->middleware('role:admin,operator')->group(function (): void {
+        Route::get('/applications', [App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
+        Route::get('/applications/{application}', [App\Http\Controllers\Admin\ApplicationController::class, 'show'])->name('applications.show');
+        Route::post('/applications/{application}/reveal-nik', [App\Http\Controllers\Admin\ApplicationController::class, 'revealNik'])->name('applications.reveal-nik');
+        Route::get('/applications/{application}/whatsapp', [App\Http\Controllers\Admin\ApplicationController::class, 'whatsapp'])->name('applications.whatsapp');
+        Route::post('/applications/{application}/transition', [App\Http\Controllers\Admin\ApplicationController::class, 'transition'])->name('applications.transition');
+        Route::post('/applications/{application}/reject', [App\Http\Controllers\Admin\ApplicationController::class, 'reject'])->name('applications.reject');
+    });
+
     Route::get('/magang/dashboard', fn () => view('dashboards.magang'))
         ->middleware('role:magang')
         ->name('magang.dashboard');
