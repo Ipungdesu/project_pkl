@@ -114,11 +114,13 @@
         var fl = $('#fLogin', container);
         if (fl) {
             fl.onsubmit = function (e) {
-                e.preventDefault(); 
                 var f = e.target, ok = mailErr(f.e);
-                if (!f.p.value) { err(f.p, 'Password wajib diisi.'); ok = false; } 
+                if (!f.p.value) { err(f.p, 'Password wajib diisi.'); ok = false; }
                 if (!capOK(f)) ok = false;
-                if (ok) toast('Tampilan demo: hubungkan form ini ke backend login.');
+                if (!ok) { e.preventDefault(); return; }
+                if (f.dataset.real === '1' || (f.getAttribute('action') && f.getAttribute('action') !== '#')) { return; }
+                e.preventDefault();
+                toast('Tampilan demo: hubungkan form ini ke backend login.');
             };
         }
 
@@ -126,20 +128,22 @@
         var fr = $('#fReg', container);
         if (fr) {
             fr.onsubmit = function (e) {
-                e.preventDefault(); 
-                var f = e.target, ok = mailErr(f.e); 
-                if (!pwOK($('.pw', f))) ok = false; 
+                var f = e.target, ok = mailErr(f.e);
+                if (!pwOK($('.pw', f))) ok = false;
                 if (!capOK(f)) ok = false;
-                var ag = f.agree.checked; 
+                var ag = f.agree.checked;
                 var agErr = $('#agreeErr', f);
-                if (agErr) agErr.style.display = ag ? 'none' : 'block'; 
+                if (agErr) agErr.style.display = ag ? 'none' : 'block';
                 if (!ag) ok = false;
-                if (ok) { 
-                    try { sessionStorage.setItem('ewfMail', f.e.value.trim()); } catch (x) { } 
-                    next(f); 
-                } else { 
-                    var b = $('.f.bad input', f); if (b) b.focus(); 
+                if (!ok) {
+                    e.preventDefault();
+                    var b = $('.f.bad input', f); if (b) b.focus();
+                    return;
                 }
+                try { sessionStorage.setItem('ewfMail', f.e.value.trim()); } catch (x) { }
+                if (f.dataset.real === '1' || (f.getAttribute('action') && f.getAttribute('action') !== '#')) { return; }
+                e.preventDefault();
+                next(f);
             };
         }
 
@@ -147,12 +151,13 @@
         var ff = $('#fForgot', container);
         if (ff) {
             ff.onsubmit = function (e) {
-                e.preventDefault(); 
-                var f = e.target; 
-                if (!mailErr(f.e)) return;
-                var fm = $('#fm', container); if (fm) fm.textContent = f.e.value.trim(); 
-                var sent = $('#sent', container); if (sent) sent.hidden = false; 
-                var dr = $('#demoReset', container); if (dr) dr.hidden = false; 
+                var f = e.target;
+                if (!mailErr(f.e)) { e.preventDefault(); return; }
+                if (f.dataset.real === '1' || (f.getAttribute('action') && f.getAttribute('action') !== '#')) { return; }
+                e.preventDefault();
+                var fm = $('#fm', container); if (fm) fm.textContent = f.e.value.trim();
+                var sent = $('#sent', container); if (sent) sent.hidden = false;
+                var dr = $('#demoReset', container); if (dr) dr.hidden = false;
                 var fb = $('#fBtn', container); if (fb) fb.textContent = 'KIRIM ULANG';
             };
         }
@@ -161,11 +166,12 @@
         var fs = $('#fReset', container);
         if (fs) {
             fs.onsubmit = function (e) {
-                e.preventDefault(); 
-                if (pwOK($('.pw', e.target))) {
-                    toast('Password berhasil diperbarui. Silakan masuk.'); 
-                    setTimeout(function () { next(fs); }, 1000);
-                }
+                var f = e.target;
+                if (!pwOK($('.pw', f))) { e.preventDefault(); return; }
+                if (f.dataset.real === '1' || (f.getAttribute('action') && f.getAttribute('action') !== '#')) { return; }
+                e.preventDefault();
+                toast('Password berhasil diperbarui. Silakan masuk.');
+                setTimeout(function () { next(fs); }, 1000);
             };
         }
 
@@ -196,11 +202,15 @@
                 });
             });
             fo.onsubmit = function (e) {
-                e.preventDefault(); 
-                var full = os.every(function (i) { return i.value; }); 
-                var o = $('#otp', container); if (o) o.classList.toggle('bad', !full); 
+                var full = os.every(function (i) { return i.value; });
+                var o = $('#otp', container); if (o) o.classList.toggle('bad', !full);
                 var oe = $('#otpErr', container); if (oe) oe.style.display = full ? 'none' : 'block';
-                if (full) next(fo);
+                if (!full) { e.preventDefault(); return; }
+                var hidden = fo.querySelector('input[name="code"]');
+                if (hidden) { hidden.value = os.map(function (i) { return i.value; }).join(''); }
+                if (fo.dataset.real === '1' || (fo.getAttribute('action') && fo.getAttribute('action') !== '#')) { return; }
+                e.preventDefault();
+                next(fo);
             };
             var rb = $('#resend', container);
             function startTimer() { 

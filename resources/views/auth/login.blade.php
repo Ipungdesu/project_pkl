@@ -11,15 +11,21 @@
         Gunakan akun demo Anda untuk mulai simulasi dan berlatih di pasar berjangka.
     </p>
 
+    @if (session('status'))
+        <div class="mb-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 leading-snug font-medium">
+            {{ session('status') }}
+        </div>
+    @endif
+
     <!-- Form Login -->
-    <form id="fLogin" method="POST" action="#" novalidate>
+    <form id="fLogin" method="POST" action="{{ route('login') }}" data-real="1" novalidate>
         @csrf
-        
+
         <!-- Input Email -->
-        <label class="f">
+        <label class="f {{ $errors->has('email') ? 'bad' : '' }}">
             <b>Email <em>*</em></b>
-            <input name="e" type="email" autocomplete="email" placeholder="nama@email.com">
-            <span class="err"></span>
+            <input name="e" type="email" autocomplete="email" placeholder="nama@email.com" value="{{ old('email', old('e')) }}">
+            <span class="err">{{ $errors->first('email') }}</span>
         </label>
 
         <!-- Input Password -->
