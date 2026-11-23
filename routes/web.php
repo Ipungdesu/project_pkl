@@ -81,6 +81,14 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/applications/{application}/whatsapp', [App\Http\Controllers\Admin\ApplicationController::class, 'whatsapp'])->name('applications.whatsapp');
         Route::post('/applications/{application}/transition', [App\Http\Controllers\Admin\ApplicationController::class, 'transition'])->name('applications.transition');
         Route::post('/applications/{application}/reject', [App\Http\Controllers\Admin\ApplicationController::class, 'reject'])->name('applications.reject');
+
+        Route::get('/jobs', [App\Http\Controllers\Admin\JobOpeningController::class, 'index'])->name('jobs.index');
+        Route::get('/jobs/create', [App\Http\Controllers\Admin\JobOpeningController::class, 'create'])->name('jobs.create');
+        Route::post('/jobs', [App\Http\Controllers\Admin\JobOpeningController::class, 'store'])->name('jobs.store');
+        Route::get('/jobs/{jobOpening}/edit', [App\Http\Controllers\Admin\JobOpeningController::class, 'edit'])->name('jobs.edit');
+        Route::put('/jobs/{jobOpening}', [App\Http\Controllers\Admin\JobOpeningController::class, 'update'])->name('jobs.update');
+        Route::patch('/jobs/{jobOpening}/toggle', [App\Http\Controllers\Admin\JobOpeningController::class, 'toggle'])->name('jobs.toggle');
+        Route::delete('/jobs/{jobOpening}', [App\Http\Controllers\Admin\JobOpeningController::class, 'destroy'])->name('jobs.destroy');
     });
 
     Route::get('/magang/dashboard', fn () => view('dashboards.magang'))
