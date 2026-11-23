@@ -224,7 +224,7 @@
                     Peluang Karir
                 </a>
                 <div class="pt-2 border-t border-gray-100">
-                    <a href="#masuk"
+                    <a href="{{ route('login') }}"
                         class="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-full text-xs font-semibold shadow-sm transition">
                         Masuk / Daftar
                     </a>
