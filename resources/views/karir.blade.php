@@ -32,7 +32,7 @@
                 <a href="#jalur-magang"
                     class="bg-white hover:bg-orange-50/60 border border-gray-200 text-gray-900 font-bold px-7 py-3.5 rounded-xl hover:-translate-y-0.5 transition duration-200 shadow-xs flex items-center space-x-2 text-sm sm:text-base">
                     <span>🎓</span>
-                    <span>Program Magang MBKM</span>
+                    <span>Program Magang</span>
                 </a>
             </div>
         </div>
@@ -180,7 +180,7 @@
                         <!-- Card Title & Desc -->
                         <div>
                             <h3 class="text-2xl font-extrabold text-gray-900 mb-3">
-                                Program Magang MBKM & Riset Pasar
+                                Program Magang & Riset Pasar
                             </h3>
                             <p class="text-gray-500 text-sm leading-relaxed">
                                 Pengalaman kerja nyata bagi mahasiswa aktif tingkat akhir. Pelajari dinamika perdagangan emas fisik, valuta asing, dan komoditi pertanian secara langsung dari praktisi industri.

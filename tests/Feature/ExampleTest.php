@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\Feature\Models\PostgresFeatureTestCase;
 
-class ExampleTest extends TestCase
+class ExampleTest extends PostgresFeatureTestCase
 {
     /**
      * A basic test example.
