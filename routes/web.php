@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\InternController;
 use App\Http\Controllers\Applicant\ApplicationController;
 use App\Http\Controllers\Applicant\JobOpeningController;
 use App\Http\Controllers\Applicant\ProfileController;
@@ -89,6 +91,11 @@ Route::middleware('auth')->group(function (): void {
         Route::put('/jobs/{jobOpening}', [App\Http\Controllers\Admin\JobOpeningController::class, 'update'])->name('jobs.update');
         Route::patch('/jobs/{jobOpening}/toggle', [App\Http\Controllers\Admin\JobOpeningController::class, 'toggle'])->name('jobs.toggle');
         Route::delete('/jobs/{jobOpening}', [App\Http\Controllers\Admin\JobOpeningController::class, 'destroy'])->name('jobs.destroy');
+
+        Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+        Route::get('/interns', [InternController::class, 'index'])->name('interns.index');
+        Route::get('/intern-placements/{placement}/edit', [InternController::class, 'edit'])->name('interns.placements.edit');
+        Route::put('/intern-placements/{placement}', [InternController::class, 'update'])->name('interns.placements.update');
     });
 
     Route::get('/magang/dashboard', fn () => view('dashboards.magang'))
