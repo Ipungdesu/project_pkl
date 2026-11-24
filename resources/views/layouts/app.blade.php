@@ -46,8 +46,12 @@
                     <a href="{{ route('operator.dashboard') }}" class="hover:text-orange-600 transition">Operator</a>
                     <a href="{{ route('operator.admins.index') }}" class="hover:text-orange-600 transition">Kelola Admin</a>
                 @endif
-                @if ($user?->isAdmin())
+                @if ($user?->isAdmin() || $user?->isOperator())
                     <a href="{{ route('admin.dashboard') }}" class="hover:text-orange-600 transition">Admin</a>
+                    <a href="{{ route('admin.applications.index') }}" class="hover:text-orange-600 transition">Lamaran</a>
+                    <a href="{{ route('admin.jobs.index') }}" class="hover:text-orange-600 transition">Lowongan</a>
+                    <a href="{{ route('admin.employees.index') }}" class="hover:text-orange-600 transition">Karyawan</a>
+                    <a href="{{ route('admin.interns.index') }}" class="hover:text-orange-600 transition">Magang</a>
                 @endif
                 <a href="{{ route('beranda') }}" class="hover:text-orange-600 transition">Beranda</a>
             </nav>

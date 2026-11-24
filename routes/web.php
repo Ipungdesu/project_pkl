@@ -72,7 +72,24 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:operator')
         ->name('operator.dashboard');
 
-    Route::get('/admin/dashboard', fn () => view('dashboards.admin'))
+    Route::get('/admin/dashboard', function () {
+        $pendingReviewCount = \App\Models\Application::query()
+            ->where('status', 'submitted')
+            ->count();
+        $interviewCount = \App\Models\Application::query()
+            ->where('status', 'interview')
+            ->count();
+        $acceptedThisMonthCount = \App\Models\Application::query()
+            ->where('status', 'accepted')
+            ->whereBetween('reviewed_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+
+        return view('dashboards.admin', [
+            'pendingReviewCount' => $pendingReviewCount,
+            'interviewCount' => $interviewCount,
+            'acceptedThisMonthCount' => $acceptedThisMonthCount,
+        ]);
+    })
         ->middleware('role:admin,operator')
         ->name('admin.dashboard');
 
