@@ -3,7 +3,6 @@
 use App\Http\Controllers\Applicant\ApplicationController;
 use App\Http\Controllers\Applicant\JobOpeningController;
 use App\Http\Controllers\Applicant\ProfileController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Operator\AdminController;
 use App\Models\JobOpening;
 use Illuminate\Support\Facades\Route;
@@ -23,28 +22,34 @@ Route::get('/tentang', function () {
     return view('about');
 })->name('tentang');
 
-// Rute Fitur Otentikasi & Akun Demo
-Route::controller(AuthController::class)->group(function () {
-    Route::get('/login', 'login')->name('login');
-    Route::get('/register', 'register')->name('register');
-    Route::get('/verifikasi', 'verify')->name('verifikasi');
-    Route::get('/pendaftaran-berhasil', 'done')->name('pendaftaran.berhasil');
-    Route::get('/lupa-password', 'forgotPassword')->name('lupa-password');
-    Route::get('/reset-password', 'resetPassword')->name('reset-password');
-});
-
 // Rute untuk Halaman Peluang Karir
 Route::get('/peluang-karir', function () {
     return view('karir');
 })->name('karir');
 
-// Rute Landingpage Ke Halaman Login
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-
 Route::middleware('auth')->group(function (): void {
+    Route::get('/dashboard', function () {
+        $user = request()->user();
+
+        if ($user?->isOperator()) {
+            return redirect()->route('operator.dashboard');
+        }
+
+        if ($user?->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user?->isMagang()) {
+            return redirect()->route('magang.dashboard');
+        }
+
+        if ($user?->isKaryawan()) {
+            return redirect()->route('karyawan.dashboard');
+        }
+
+        abort(403);
+    })->name('dashboard');
+
     Route::middleware('role:magang,karyawan')->prefix('pelamar')->name('applicant.')->group(function (): void {
         Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
@@ -85,4 +90,3 @@ Route::middleware('auth')->group(function (): void {
 });
 
 require __DIR__.'/auth.php';
-// require __DIR__ . '/auth.php';

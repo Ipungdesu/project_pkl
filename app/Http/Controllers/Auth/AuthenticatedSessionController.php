@@ -21,6 +21,11 @@ class AuthenticatedSessionController extends Controller
 
     public function store(Request $request, AuthActivityLogger $activityLogger): RedirectResponse
     {
+        $request->merge([
+            'email' => $request->input('email', $request->input('e')),
+            'password' => $request->input('password', $request->input('p')),
+        ]);
+
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string'],

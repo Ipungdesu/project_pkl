@@ -18,11 +18,12 @@ class PasswordOtpController extends Controller
 {
     public function create(): View
     {
-        return view('auth.forgot-password');
+        return view('auth.forgot');
     }
 
     public function send(Request $request, AuthActivityLogger $activityLogger): RedirectResponse
     {
+        $request->merge(['email' => $request->input('email', $request->input('e'))]);
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
         ]);
@@ -51,24 +52,30 @@ class PasswordOtpController extends Controller
 
         $activityLogger->record($user, 'auth', 'otp_requested', $request->ip());
         $request->session()->put('otp_email', $email);
+        $request->session()->put('otp_purpose', 'password_reset');
 
-        return redirect()->route('password.otp.form')
-            ->with('status', 'If an active account matches that email, a verification code has been sent.');
+        return redirect()->route('verifikasi')
+            ->with('status', 'Jika email terdaftar, kode OTP telah dikirim.');
     }
 
     public function showVerify(Request $request): View|RedirectResponse
     {
         if (! $request->session()->has('otp_email')) {
-            return redirect()->route('password.request');
+            return redirect()->route('lupa-password');
         }
 
-        return view('auth.verify-password-otp', [
+        return view('auth.verify', [
             'email' => $request->session()->get('otp_email'),
+            'purpose' => $request->session()->get('otp_purpose', 'password_reset'),
         ]);
     }
 
     public function verify(Request $request, AuthActivityLogger $activityLogger): RedirectResponse
     {
+        $request->merge([
+            'email' => $request->input('email', $request->session()->get('otp_email')),
+            'code' => $request->input('code'),
+        ]);
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'code' => ['required', 'digits:6'],
@@ -128,7 +135,7 @@ class PasswordOtpController extends Controller
         ]);
         $request->session()->put('otp_email', $email);
 
-        return redirect()->route('password.reset');
+        return redirect()->route('reset-password');
     }
 
     public function showReset(Request $request): View|RedirectResponse
@@ -136,11 +143,11 @@ class PasswordOtpController extends Controller
         if (! $this->hasValidResetChallenge($request)) {
             $request->session()->forget('otp_password_reset');
 
-            return redirect()->route('password.request')
-                ->withErrors(['email' => 'Verify a current code before resetting your password.']);
+            return redirect()->route('lupa-password')
+                ->withErrors(['email' => 'Verifikasi kode terlebih dahulu sebelum mengatur ulang kata sandi.']);
         }
 
-        return view('auth.reset-password');
+        return view('auth.reset');
     }
 
     public function reset(Request $request, AuthActivityLogger $activityLogger): RedirectResponse
@@ -148,10 +155,14 @@ class PasswordOtpController extends Controller
         if (! $this->hasValidResetChallenge($request)) {
             $request->session()->forget('otp_password_reset');
 
-            return redirect()->route('password.request')
-                ->withErrors(['email' => 'Verify a current code before resetting your password.']);
+            return redirect()->route('lupa-password')
+                ->withErrors(['email' => 'Verifikasi kode terlebih dahulu sebelum mengatur ulang kata sandi.']);
         }
 
+        $request->merge([
+            'password' => $request->input('password', $request->input('r')),
+            'password_confirmation' => $request->input('password_confirmation', $request->input('cr')),
+        ]);
         $validated = $request->validate([
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -167,7 +178,7 @@ class PasswordOtpController extends Controller
             $activityLogger->record($user, 'security', 'password_reset', $request->ip());
         });
 
-        $request->session()->forget(['otp_password_reset', 'otp_email']);
+        $request->session()->forget(['otp_password_reset', 'otp_email', 'otp_purpose']);
 
         return redirect()->route('login')->with('status', 'Your password has been reset. You can now sign in.');
     }

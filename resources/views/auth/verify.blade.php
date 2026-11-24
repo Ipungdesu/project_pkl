@@ -8,15 +8,23 @@
     <span class="inline-block text-[10.5px] font-bold uppercase tracking-wider text-orange-600 mb-0.5">Keamanan Akun</span>
     <h1 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mb-1">Verifikasi Email</h1>
     <p class="text-xs text-gray-500 mb-3.5 leading-snug">
-        Kode 6 digit telah dikirim ke <strong id="mail" class="text-gray-900 font-bold">email Anda</strong>. Kode berlaku selama 10 menit.
+        Kode 6 digit telah dikirim ke <strong id="mail" class="text-gray-900 font-bold">{{ $email ?? 'email Anda' }}</strong>. Kode berlaku selama 10 menit.
     </p>
 
+    @if (session('status'))
+        <div class="mb-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 leading-snug font-medium">
+            {{ session('status') }}
+        </div>
+    @endif
+
     <!-- Form OTP -->
-    <form id="fOtp" method="POST" action="#" data-next="{{ route('pendaftaran.berhasil') }}" novalidate>
+    <form id="fOtp" method="POST" action="{{ route('verifikasi.submit') }}" data-real="1" novalidate>
         @csrf
-        
+        <input type="hidden" name="email" value="{{ $email ?? session('otp_email') }}">
+        <input type="hidden" name="code" value="">
+
         <!-- 6 Digit OTP Inputs -->
-        <div class="otp" id="otp">
+        <div class="otp {{ $errors->has('code') ? 'bad' : '' }}" id="otp">
             <input maxlength="1" inputmode="numeric" aria-label="Digit 1">
             <input maxlength="1" inputmode="numeric" aria-label="Digit 2">
             <input maxlength="1" inputmode="numeric" aria-label="Digit 3">
@@ -24,9 +32,9 @@
             <input maxlength="1" inputmode="numeric" aria-label="Digit 5">
             <input maxlength="1" inputmode="numeric" aria-label="Digit 6">
         </div>
-        
-        <span class="err text-xs text-rose-500 font-medium text-center mb-2 block" id="otpErr" style="display:none">
-            Masukkan 6 digit kode verifikasi secara lengkap.
+
+        <span class="err text-xs text-rose-500 font-medium text-center mb-2 block" id="otpErr" @style(['display:block' => $errors->has('code'), 'display:none' => ! $errors->has('code')])>
+            {{ $errors->first('code', 'Masukkan 6 digit kode verifikasi secara lengkap.') }}
         </span>
 
         <!-- Tombol Aksi -->
