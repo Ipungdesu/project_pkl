@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'PT Equityworld Futures | Pialang Berjangka Resmi Indonesia')
 
