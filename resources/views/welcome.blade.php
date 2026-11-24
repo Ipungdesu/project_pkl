@@ -1,4 +1,4 @@
-﻿@extends('layouts.public')
+@extends('layouts.public')
 
 @section('title', 'PT Equityworld Futures | Pialang Berjangka Resmi Indonesia')
 
@@ -212,7 +212,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-                @forelse ($jobOpenings as $jobOpening)
+                @forelse (($jobOpenings ?? []) as $jobOpening)
                     <article class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                         <span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
                             {{ $jobOpening->type === 'magang' ? 'Magang' : 'Karyawan' }}
