@@ -1,19 +1,20 @@
 <?php
 
-use App\Http\Controllers\Applicant\ApplicationController;
-use App\Http\Controllers\Applicant\JobOpeningController;
-use App\Http\Controllers\Applicant\ProfileController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\ApplicantManagementController;
 use App\Http\Controllers\Admin\CalonNasabahController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Applicant\ApplicationController;
+use App\Http\Controllers\Applicant\JobOpeningController;
+use App\Http\Controllers\Applicant\ProfileController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Operator\AdminController;
 use App\Models\JobOpening;
 use Illuminate\Support\Facades\Route;
 
+// Rute untuk Halaman Utama (Beranda / Landing Page)
 Route::get('/', function () {
     try {
         $jobOpenings = JobOpening::open()
@@ -27,9 +28,15 @@ Route::get('/', function () {
     return view('welcome', compact('jobOpenings'));
 })->name('beranda');
 
+// Rute untuk Halaman Tentang Kami
 Route::get('/tentang', function () {
     return view('about');
 })->name('tentang');
+
+// Rute untuk Halaman Peluang Karir
+Route::get('/peluang-karir', function () {
+    return view('karir');
+})->name('karir');
 
 // Rute Fitur Otentikasi & Akun Demo
 Route::controller(AuthController::class)->group(function () {
@@ -41,21 +48,35 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/reset-password', 'resetPassword')->name('reset-password');
 });
 
-Route::get('/peluang-karir', function () {
-    return view('karir');
-})->name('karir');
-
-Route::middleware('guest')->group(function (): void {
-    Route::get('/verifikasi', [AuthController::class, 'verify'])->name('verifikasi');
-    Route::get('/pendaftaran-berhasil', [AuthController::class, 'done'])->name('pendaftaran.berhasil');
-});
-
-// Rute Landingpage Ke Halaman Login
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
+// Rute Terautentikasi
 Route::middleware('auth')->group(function (): void {
+    // Logout
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // Pengarah Dashboard berdasarkan Role
+    Route::get('/dashboard', function () {
+        $user = request()->user();
+
+        if ($user?->isOperator()) {
+            return redirect()->route('operator.dashboard');
+        }
+
+        if ($user?->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user?->isMagang()) {
+            return redirect()->route('magang.dashboard');
+        }
+
+        if ($user?->isKaryawan()) {
+            return redirect()->route('karyawan.dashboard');
+        }
+
+        abort(403);
+    })->name('dashboard');
+
+    // Pelamar (Magang & Karyawan)
     Route::middleware('role:magang,karyawan')->prefix('pelamar')->name('applicant.')->group(function (): void {
         Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
@@ -72,6 +93,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dokumen-lamaran/{document}', [ApplicationController::class, 'download'])
         ->name('application-documents.download');
 
+    // Operator Dashboard
     Route::get('/operator/dashboard', fn () => view('dashboards.operator'))
         ->middleware('role:operator')
         ->name('operator.dashboard');
@@ -101,19 +123,20 @@ Route::middleware('auth')->group(function (): void {
         Route::put('/pengaturan/password', [SettingController::class, 'updatePassword'])->name('pengaturan.password');
     });
 
+    // Magang Dashboard
     Route::get('/magang/dashboard', fn () => view('dashboards.magang'))
         ->middleware('role:magang')
         ->name('magang.dashboard');
 
+    // Karyawan Dashboard
     Route::get('/karyawan/dashboard', fn () => view('dashboards.karyawan'))
         ->middleware('role:karyawan')
         ->name('karyawan.dashboard');
 
+    // Operator Admin Management CRUD
     Route::prefix('operator')->name('operator.')->middleware('role:operator')->group(function (): void {
         Route::resource('admins', AdminController::class)
             ->except(['show'])
             ->parameters(['admins' => 'user']);
     });
 });
-
-// require __DIR__ . '/auth.php';
