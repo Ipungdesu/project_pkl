@@ -11,47 +11,26 @@
         Cukup email dan password untuk mulai simulasi trading bebas risiko.
     </p>
 
-
     <!-- Form Registrasi -->
-    <form id="fReg" method="POST" action="{{ route('register') }}" data-real="1" novalidate>
+    <form id="fReg" method="POST" action="#" data-next="{{ route('verifikasi') }}" novalidate>
         @csrf
 
-        <!-- Nama -->
-        <label class="f {{ $errors->has('name') ? 'bad' : '' }}">
-            <b>Nama Lengkap <em>*</em></b>
-            <input name="name" type="text" autocomplete="name" placeholder="Nama lengkap" value="{{ old('name') }}">
-            <span class="err">{{ $errors->first('name') }}</span>
-        </label>
-
         <!-- Email -->
-        <label class="f {{ $errors->has('email') ? 'bad' : '' }}">
+        <label class="f">
             <b>Email <em>*</em></b>
-            <input name="e" type="email" autocomplete="email" placeholder="nama@email.com" value="{{ old('email', old('e')) }}">
-            <span class="err">{{ $errors->first('email') }}</span>
-        </label>
-
-        <label class="f {{ $errors->has('role') ? 'bad' : '' }}">
-            <b>Daftar Sebagai <em>*</em></b>
-            <select name="role" class="w-full h-[2.45rem] rounded-[0.65rem] border border-gray-300 bg-white px-3 text-[0.8125rem] font-medium text-gray-900 focus:border-[#f7941d] focus:outline-none" style="box-shadow:none;">
-                <option value="magang" @selected(old('role', 'magang') === 'magang')>Magang</option>
-                <option value="karyawan" @selected(old('role') === 'karyawan')>Karyawan</option>
-            </select>
-            <span class="err">{{ $errors->first('role') }}</span>
+            <input name="e" type="email" autocomplete="email" placeholder="nama@email.com">
+            <span class="err"></span>
         </label>
 
         <!-- Dynamic Password Box (Password, Meter, Rules, Confirm Password) -->
         <div class="pw" data-n="p"></div>
-
-        @if ($errors->has('password'))
-            <span class="err text-[11px] text-rose-500 font-medium mb-1 block" style="display:block">{{ $errors->first('password') }}</span>
-        @endif
 
         <!-- Dynamic Captcha Box -->
         <div class="capw" data-cap></div>
 
         <!-- Checkbox Persetujuan -->
         <label class="flex items-start gap-2 text-[11px] text-gray-600 mt-1 mb-1 cursor-pointer select-none">
-            <input type="checkbox" name="agree" class="w-3.5 h-3.5 mt-0.5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 accent-orange-500 shrink-0" @checked(old('agree'))>
+            <input type="checkbox" name="agree" class="w-3.5 h-3.5 mt-0.5 rounded border-gray-300 text-orange-500 focus:ring-orange-400 accent-orange-500 shrink-0">
             <span>Saya menyetujui <a class="font-bold text-orange-600 hover:underline" href="#privacy" data-toast="Kebijakan Privasi PT Equityworld Futures.">Kebijakan Privasi &amp; Ketentuan</a>.</span>
         </label>
         <span class="err text-[11px] text-rose-500 font-medium ml-5 mb-1 block" id="agreeErr" style="display:none">Anda harus menyetujui kebijakan privasi.</span>

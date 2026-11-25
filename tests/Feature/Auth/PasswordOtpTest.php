@@ -18,8 +18,8 @@ class PasswordOtpTest extends PostgresFeatureTestCase
         Mail::fake();
         $user = User::factory()->create(['email' => 'otp-valid@example.test']);
 
-        $this->post(route('lupa-password.send'), ['email' => $user->email])
-            ->assertRedirect(route('verifikasi'));
+        $this->post(route('password.otp.send'), ['email' => $user->email])
+            ->assertRedirect(route('password.otp.form'));
         $otp = OtpCode::query()->where('user_id', $user->id)->firstOrFail();
         $this->assertNotSame('123456', $otp->code_hash);
         $this->assertSame(now()->addMinutes(10)->timestamp, $otp->expires_at->timestamp);
@@ -32,10 +32,10 @@ class PasswordOtpTest extends PostgresFeatureTestCase
         });
         $this->assertTrue(Hash::check($code, $otp->code_hash));
 
-        $this->post(route('verifikasi.submit'), [
+        $this->post(route('password.otp.verify'), [
             'email' => $user->email,
             'code' => $code,
-        ])->assertRedirect(route('reset-password'));
+        ])->assertRedirect(route('password.reset'));
 
         $otp->refresh();
         $this->assertNotNull($otp->used_at);
@@ -53,7 +53,7 @@ class PasswordOtpTest extends PostgresFeatureTestCase
         $this->assertGuest();
 
         $this->withSession(['otp_email' => $user->email]);
-        $this->post(route('verifikasi.submit'), [
+        $this->post(route('password.otp.verify'), [
             'email' => $user->email,
             'code' => $code,
         ])->assertSessionHasErrors('code');
@@ -64,13 +64,13 @@ class PasswordOtpTest extends PostgresFeatureTestCase
         Mail::fake();
         $this->travelTo('2026-11-16 12:00:00');
         $user = User::factory()->create(['email' => 'otp-expired@example.test']);
-        $this->post(route('lupa-password.send'), ['email' => $user->email]);
+        $this->post(route('password.otp.send'), ['email' => $user->email]);
         $mail = Mail::sent(PasswordResetOtpMail::class)->first();
         $this->assertNotNull($mail);
         $code = $mail->code;
 
         $this->travel(11)->minutes();
-        $this->post(route('verifikasi.submit'), [
+        $this->post(route('password.otp.verify'), [
             'email' => $user->email,
             'code' => $code,
         ])->assertSessionHasErrors('code');
@@ -86,14 +86,14 @@ class PasswordOtpTest extends PostgresFeatureTestCase
     {
         Mail::fake();
         $user = User::factory()->create(['email' => 'otp-wrong@example.test']);
-        $this->post(route('lupa-password.send'), ['email' => $user->email]);
+        $this->post(route('password.otp.send'), ['email' => $user->email]);
         $mail = Mail::sent(PasswordResetOtpMail::class)->first();
         $this->assertNotNull($mail);
         $code = $mail->code;
         $wrongCode = str_pad((string) (((int) $code + 1) % 1000000), 6, '0', STR_PAD_LEFT);
 
         for ($attempt = 0; $attempt < 5; $attempt++) {
-            $this->post(route('verifikasi.submit'), [
+            $this->post(route('password.otp.verify'), [
                 'email' => $user->email,
                 'code' => $wrongCode,
             ])->assertSessionHasErrors('code');
@@ -101,7 +101,7 @@ class PasswordOtpTest extends PostgresFeatureTestCase
 
         $otp = OtpCode::query()->where('user_id', $user->id)->firstOrFail();
         $this->assertSame(5, (int) $otp->attempts);
-        $this->post(route('verifikasi.submit'), [
+        $this->post(route('password.otp.verify'), [
             'email' => $user->email,
             'code' => $wrongCode,
         ])->assertSessionHasErrors('code');
@@ -114,11 +114,11 @@ class PasswordOtpTest extends PostgresFeatureTestCase
         $user = User::factory()->create(['email' => 'otp-throttle@example.test']);
 
         for ($attempt = 0; $attempt < 3; $attempt++) {
-            $this->post(route('lupa-password.send'), ['email' => $user->email])
-                ->assertRedirect(route('verifikasi'));
+            $this->post(route('password.otp.send'), ['email' => $user->email])
+                ->assertRedirect(route('password.otp.form'));
         }
 
-        $this->post(route('lupa-password.send'), ['email' => $user->email])
+        $this->post(route('password.otp.send'), ['email' => $user->email])
             ->assertTooManyRequests();
 
         Mail::assertSentTimes(PasswordResetOtpMail::class, 3);
@@ -128,8 +128,8 @@ class PasswordOtpTest extends PostgresFeatureTestCase
     {
         Mail::fake();
 
-        $this->post(route('lupa-password.send'), ['email' => 'unknown@example.test'])
-            ->assertRedirect(route('verifikasi'))
+        $this->post(route('password.otp.send'), ['email' => 'unknown@example.test'])
+            ->assertRedirect(route('password.otp.form'))
             ->assertSessionHas('status');
 
         Mail::assertNothingSent();

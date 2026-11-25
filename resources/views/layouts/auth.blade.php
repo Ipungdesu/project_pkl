@@ -61,9 +61,7 @@
         .f { display: block; position: relative; margin-bottom: 0.65rem; }
         .f > b { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #374151; margin-bottom: 0.25rem; }
         .f > b em { color: #e11d48; font-style: normal; margin-left: 2px; }
-        .f input,
-        .f select,
-        .f textarea {
+        .f input {
             width: 100%;
             height: 2.45rem;
             border-radius: 0.65rem;
@@ -76,28 +74,16 @@
             outline: none;
             transition: all 0.15s ease;
         }
-        .f textarea {
-            height: auto;
-            min-height: 4.5rem;
-            padding: 0.6rem 0.85rem;
-        }
-        .f input::placeholder,
-        .f textarea::placeholder { color: #9ca3af; font-size: 0.78rem; }
-        .f input:focus,
-        .f select:focus,
-        .f textarea:focus {
+        .f input::placeholder { color: #9ca3af; font-size: 0.78rem; }
+        .f input:focus {
             border-color: #f7941d;
             box-shadow: 0 0 0 3px rgba(247, 148, 29, 0.18);
         }
-        .f.bad input,
-        .f.bad select,
-        .f.bad textarea {
+        .f.bad input {
             border-color: #ef4444;
             background-color: #fffafb;
         }
-        .f.bad input:focus,
-        .f.bad select:focus,
-        .f.bad textarea:focus {
+        .f.bad input:focus {
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
         }
         .err {
@@ -290,7 +276,7 @@
         .logo.static > .fb { display: block; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between py-2 sm:py-3 px-3 sm:px-6 relative text-gray-800 antialiased selection:bg-orange-500 selection:text-white overflow-y-auto">
+<body class="min-h-screen h-screen flex flex-col justify-between py-2 sm:py-3 px-3 sm:px-6 relative text-gray-800 antialiased selection:bg-orange-500 selection:text-white overflow-y-auto lg:overflow-hidden">
 
     <!-- ================= LATAR BELAKANG GEDUNG (JELAS & ELEGAN) ================= -->
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none select-none">
@@ -322,11 +308,11 @@
         </a>
     </header>
 
-    <!-- ================= KARTU UTAMA AUTH ================= -->
-    <main class="w-full max-w-5xl lg:max-w-6xl mx-auto my-auto bg-white/95 backdrop-blur-xl border border-white/70 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10 transition-all shrink-0 lg:min-h-[580px]">
+    <!-- ================= KARTU UTAMA AUTH (FRAME UKURAN TETAP & IDENTIK DI SEMUA HALAMAN) ================= -->
+    <main class="w-full max-w-5xl lg:max-w-6xl mx-auto my-auto bg-white/95 backdrop-blur-xl border border-white/70 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10 transition-all shrink-0 lg:h-[580px]">
         
-        <!-- KOLOM KIRI: HERO & ANIMASI 3D GLOBE -->
-        <aside class="lg:col-span-5 bg-gradient-to-b from-orange-50/90 via-white/70 to-orange-50/90 p-4 sm:p-6 lg:p-7 flex flex-col items-center justify-center relative border-b lg:border-b-0 lg:border-r border-orange-100/80 overflow-hidden select-none shrink-0 min-h-[320px] lg:min-h-full">
+        <!-- KOLOM KIRI: HERO & ANIMASI 3D GLOBE (UKURAN TETAP & IDENTIK DI SEMUA HALAMAN) -->
+        <aside class="lg:col-span-5 bg-gradient-to-b from-orange-50/90 via-white/70 to-orange-50/90 p-4 sm:p-6 lg:p-7 flex flex-col items-center justify-center relative border-b lg:border-b-0 lg:border-r border-orange-100/80 overflow-hidden select-none shrink-0 h-full">
             
             <!-- Efek Halo Pendaran Cahaya (Ambient Glow) -->
             <div class="absolute w-52 h-52 rounded-full bg-gradient-to-tr from-orange-500/35 via-amber-400/25 to-yellow-300/20 blur-2xl animate-pulse-glow -z-0 pointer-events-none"></div>
@@ -376,8 +362,8 @@
             </div>
         </aside>
 
-        <!-- KOLOM KANAN: KONTEN FORM AUTH -->
-        <section class="lg:col-span-7 p-4 sm:p-6 lg:p-7 flex flex-col justify-center relative overflow-y-auto" id="authPane">
+        <!-- KOLOM KANAN: KONTEN FORM AUTH DENGAN TINGGI IDENTIK & TRANSISI HALUS -->
+        <section class="lg:col-span-7 p-4 sm:p-6 lg:p-7 flex flex-col justify-center h-full relative overflow-hidden" id="authPane">
             <div id="paneContent" class="w-full my-auto transition-all duration-200 ease-out">
                 @yield('content')
             </div>

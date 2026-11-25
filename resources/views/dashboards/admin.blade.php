@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Admin')
+@section('title', 'Admin dashboard')
 
 @section('content')
     <div class="space-y-6">
@@ -37,4 +37,6 @@
             </div>
         </div>
     </div>
+    <h1>Admin dashboard</h1>
+    <p>Admin area.</p>
 @endsection
