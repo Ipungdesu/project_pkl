@@ -48,6 +48,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/reset-password', 'resetPassword')->name('reset-password');
 });
 
+// Proses Login (POST)
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+
 // Rute Terautentikasi
 Route::middleware('auth')->group(function (): void {
     // Logout
