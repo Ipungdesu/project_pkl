@@ -23,6 +23,17 @@ use RuntimeException;
 ])]
 class Application extends Model
 {
+    public const REVIEWABLE_STATUSES = ['submitted', 'in_review', 'interview'];
+
+    /**
+     * @var array<string, list<string>>
+     */
+    public const STATUS_TRANSITIONS = [
+        'submitted' => ['in_review', 'interview', 'accepted', 'rejected'],
+        'in_review' => ['interview', 'accepted', 'rejected'],
+        'interview' => ['accepted', 'rejected'],
+    ];
+
     protected function casts(): array
     {
         return [
@@ -65,9 +76,7 @@ class Application extends Model
 
     public function accept(User $admin, ?string $note = null): void
     {
-        if (! $admin->isAdmin() && ! $admin->isOperator()) {
-            throw new AuthorizationException('Only admins and operators can accept applications.');
-        }
+        $this->ensureCanBeReviewedBy($admin);
 
         try {
             DB::select('select fn_accept_application(?, ?, ?)', [
@@ -77,6 +86,48 @@ class Application extends Model
             ]);
         } catch (QueryException $exception) {
             throw new RuntimeException('Unable to accept the application.', previous: $exception);
+        }
+    }
+
+    public function reject(User $admin, string $note): void
+    {
+        $this->ensureCanBeReviewedBy($admin);
+
+        if (trim($note) === '') {
+            throw new RuntimeException('Rejection note is required.');
+        }
+
+        try {
+            DB::transaction(function () use ($admin, $note): void {
+                $locked = self::query()->lockForUpdate()->findOrFail($this->getKey());
+
+                if (! in_array($locked->status, self::REVIEWABLE_STATUSES, true)) {
+                    throw new RuntimeException('Lamaran ini sudah diproses dan tidak dapat ditolak.');
+                }
+
+                $locked->forceFill([
+                    'status' => 'rejected',
+                    'reviewed_by' => $admin->getKey(),
+                    'reviewed_at' => now(),
+                    'admin_note' => $note,
+                ])->save();
+
+                $this->refresh();
+            });
+        } catch (QueryException $exception) {
+            throw new RuntimeException('Unable to reject the application.', previous: $exception);
+        }
+    }
+
+    public function canTransitionTo(string $status): bool
+    {
+        return in_array($status, self::STATUS_TRANSITIONS[$this->status] ?? [], true);
+    }
+
+    private function ensureCanBeReviewedBy(User $admin): void
+    {
+        if (! $admin->isAdmin() && ! $admin->isOperator()) {
+            throw new AuthorizationException('Only admins and operators can review applications.');
         }
     }
 }

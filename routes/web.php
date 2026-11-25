@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\InternController;
 use App\Http\Controllers\Applicant\ApplicationController;
 use App\Http\Controllers\Applicant\JobOpeningController;
 use App\Http\Controllers\Applicant\ProfileController;
@@ -76,6 +78,26 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:operator')
         ->name('operator.dashboard');
 
+    Route::get('/admin/dashboard', function () {
+        $pendingReviewCount = \App\Models\Application::query()
+            ->where('status', 'submitted')
+            ->count();
+        $interviewCount = \App\Models\Application::query()
+            ->where('status', 'interview')
+            ->count();
+        $acceptedThisMonthCount = \App\Models\Application::query()
+            ->where('status', 'accepted')
+            ->whereBetween('reviewed_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+
+        return view('dashboards.admin', [
+            'pendingReviewCount' => $pendingReviewCount,
+            'interviewCount' => $interviewCount,
+            'acceptedThisMonthCount' => $acceptedThisMonthCount,
+        ]);
+    })
+        ->middleware('role:admin,operator')
+        ->name('admin.dashboard');
     // ================= MODUL PORTAL ADMIN =================
     Route::middleware('role:admin,operator')->prefix('admin')->name('admin.')->group(function (): void {
         // 1. Beranda Eksekutif (EIS)
@@ -99,6 +121,28 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/pengaturan', [SettingController::class, 'index'])->name('pengaturan.index');
         Route::put('/pengaturan/profil', [SettingController::class, 'updateProfile'])->name('pengaturan.profile');
         Route::put('/pengaturan/password', [SettingController::class, 'updatePassword'])->name('pengaturan.password');
+    });
+
+    Route::prefix('admin')->name('admin.')->middleware('role:admin,operator')->group(function (): void {
+        Route::get('/applications', [App\Http\Controllers\Admin\ApplicationController::class, 'index'])->name('applications.index');
+        Route::get('/applications/{application}', [App\Http\Controllers\Admin\ApplicationController::class, 'show'])->name('applications.show');
+        Route::post('/applications/{application}/reveal-nik', [App\Http\Controllers\Admin\ApplicationController::class, 'revealNik'])->name('applications.reveal-nik');
+        Route::get('/applications/{application}/whatsapp', [App\Http\Controllers\Admin\ApplicationController::class, 'whatsapp'])->name('applications.whatsapp');
+        Route::post('/applications/{application}/transition', [App\Http\Controllers\Admin\ApplicationController::class, 'transition'])->name('applications.transition');
+        Route::post('/applications/{application}/reject', [App\Http\Controllers\Admin\ApplicationController::class, 'reject'])->name('applications.reject');
+
+        Route::get('/jobs', [App\Http\Controllers\Admin\JobOpeningController::class, 'index'])->name('jobs.index');
+        Route::get('/jobs/create', [App\Http\Controllers\Admin\JobOpeningController::class, 'create'])->name('jobs.create');
+        Route::post('/jobs', [App\Http\Controllers\Admin\JobOpeningController::class, 'store'])->name('jobs.store');
+        Route::get('/jobs/{jobOpening}/edit', [App\Http\Controllers\Admin\JobOpeningController::class, 'edit'])->name('jobs.edit');
+        Route::put('/jobs/{jobOpening}', [App\Http\Controllers\Admin\JobOpeningController::class, 'update'])->name('jobs.update');
+        Route::patch('/jobs/{jobOpening}/toggle', [App\Http\Controllers\Admin\JobOpeningController::class, 'toggle'])->name('jobs.toggle');
+        Route::delete('/jobs/{jobOpening}', [App\Http\Controllers\Admin\JobOpeningController::class, 'destroy'])->name('jobs.destroy');
+
+        Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+        Route::get('/interns', [InternController::class, 'index'])->name('interns.index');
+        Route::get('/intern-placements/{placement}/edit', [InternController::class, 'edit'])->name('interns.placements.edit');
+        Route::put('/intern-placements/{placement}', [InternController::class, 'update'])->name('interns.placements.update');
     });
 
     Route::get('/magang/dashboard', fn () => view('dashboards.magang'))
